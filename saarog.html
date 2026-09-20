@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAAR.OG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FFFFFF;
+    --paper-2: #F4F2ED;
+    --ink: #101010;
+    --ink-soft: #6C6C6C;
+    --line: rgba(16,16,16,.12);
+    --accent: #1F3A2E;
+    --accent-ink: #FFFFFF;
+    box-sizing: border-box;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper: #0D0D0D;
+      --paper-2: #151515;
+      --ink: #F2F0EB;
+      --ink-soft: #A0A0A0;
+      --line: rgba(242,240,235,.14);
+      --accent: #A9C4B2;
+      --accent-ink: #0D0D0D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0D0D0D; --paper-2: #151515; --ink: #F2F0EB; --ink-soft: #A0A0A0;
+    --line: rgba(242,240,235,.14); --accent: #A9C4B2; --accent-ink: #0D0D0D;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 120px; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Jost', -apple-system, sans-serif; font-weight: 400;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+  .up { text-transform: uppercase; letter-spacing: .14em; }
+  .grain {
+    pointer-events: none; position: absolute; inset: 0; opacity: .14; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ANNOUNCEMENT */
+  .announce {
+    background: var(--ink); color: var(--paper);
+    font-size: 11px; font-weight: 500; text-align: center; padding: 9px 16px;
+    text-transform: uppercase; letter-spacing: .16em;
+  }
+
+  /* HEADER */
+  header { position: sticky; top: 0; z-index: 70; background: var(--paper); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top,0px); }
+  .head-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 62px; gap: 16px; }
+  .logo { font-size: 20px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; text-align: center; grid-column: 2; }
+  .head-left { display: flex; justify-content: flex-start; }
+  .head-icons { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+  .icon-btn { background: none; border: none; color: var(--ink); cursor: pointer; padding: 6px; display: flex; }
+  .icon-btn svg { width: 19px; height: 19px; }
+  .icon-btn:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+  .dots { display: flex; flex-direction: column; gap: 3.5px; padding: 8px 6px; background: none; border: none; cursor: pointer; }
+  .dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--ink); display: block; }
+  .dots:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+
+  /* DRAWER */
+  .scrim { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; width: 78%; max-width: 320px;
+    background: var(--paper); border-right: 1px solid var(--line);
+    transform: translateX(-100%); transition: transform .28s ease;
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-top { display: flex; align-items: center; justify-content: space-between; height: 62px; padding: 0 20px; border-bottom: 1px solid var(--line); }
+  .drawer-top .dlogo { font-size: 15px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+  .drawer-close { background: none; border: none; cursor: pointer; color: var(--ink); padding: 6px; display: flex; }
+  .drawer-close svg { width: 18px; height: 18px; }
+  .drawer nav { padding: 22px 20px; display: flex; flex-direction: column; }
+  .drawer nav button {
+    background: none; border: none; cursor: pointer; text-align: left; color: var(--ink); font-family: inherit;
+    font-size: 13px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+    padding: 15px 0; border-bottom: 1px solid var(--line);
+  }
+  .drawer nav button.active { color: var(--ink-soft); }
+  .drawer-foot { margin-top: auto; padding: 22px 20px; border-top: 1px solid var(--line); }
+  .drawer-foot a { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 8px; }
+  .drawer-foot svg { width: 15px; height: 15px; }
+
+  /* HERO BANNER */
+  .hero-banner {
+    position: relative; overflow: hidden;
+    min-height: 62vh; display: flex; align-items: flex-end; justify-content: center;
+    background: linear-gradient(160deg, #23372C 0%, #101812 60%, #070A08 100%);
+    color: #fff; padding: 0 20px 44px; text-align: center;
+  }
+  @media (min-width: 860px) { .hero-banner { min-height: 76vh; padding-bottom: 60px; } }
+  .hero-banner .inner { position: relative; z-index: 2; }
+  .hero-banner h1 { font-size: clamp(30px, 6.4vw, 66px); font-weight: 500; letter-spacing: .18em; text-transform: uppercase; margin: 0 0 20px; line-height: 1.1; }
+  .hero-banner .kicker { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; opacity: .7; margin: 0 0 14px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: inherit; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em;
+    padding: 13px 30px; border: 1px solid currentColor; background: none; color: inherit; cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .btn.solid { background: #fff; color: #101010; border-color: #fff; }
+  .btn.solid:hover { background: transparent; color: #fff; }
+  .btn.ink { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.ink:hover { background: transparent; color: var(--ink); }
+  .btn.block { width: 100%; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* SEARCH */
+  .search-panel {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 110; background: var(--paper);
+    border-bottom: 1px solid var(--line); transform: translateY(-100%); transition: transform .25s ease;
+    padding-top: env(safe-area-inset-top,0px);
+  }
+  .search-panel.open { transform: translateY(0); }
+  .search-inner { display: flex; align-items: center; gap: 12px; height: 62px; }
+  .search-inner svg { width: 18px; height: 18px; flex: none; color: var(--ink-soft); }
+  .search-inner input {
+    flex: 1; border: none; background: none; outline: none; color: var(--ink);
+    font-family: inherit; font-size: 14px; letter-spacing: .06em; padding: 8px 0;
+  }
+  .search-inner input::placeholder { color: var(--ink-soft); text-transform: uppercase; font-size: 12px; letter-spacing: .14em; }
+  .search-close { background: none; border: none; cursor: pointer; color: var(--ink); font-family: inherit; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding: 8px; }
+  .no-results { text-align: center; padding: 50px 20px; color: var(--ink-soft); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; display: none; }
+  .no-results.show { display: block; }
+
+  /* PRODUCTS */
+  .products { padding: 56px 0 10px; }
+  .sec-title { text-align: center; font-size: 13px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; margin: 0 0 30px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 6px; } }
+  .card { display: flex; flex-direction: column; background: var(--paper); }
+  .card.hide { display: none; }
+  .art {
+    aspect-ratio: 4/5; position: relative; overflow: hidden; cursor: pointer;
+    border: none; padding: 0; width: 100%; display: block; background: var(--paper-2);
+  }
+  .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .art .ph-mark {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5);
+  }
+  .info { padding: 14px 8px 22px; text-align: center; display: flex; flex-direction: column; gap: 6px; }
+  .info .name { font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; line-height: 1.4; }
+  .price-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .price-old { font-size: 12px; color: var(--ink-soft); text-decoration: line-through; }
+  .price-now { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+  .installment { font-size: 11px; color: var(--ink-soft); letter-spacing: .04em; }
+  .badge {
+    position: absolute; top: 10px; left: 10px; z-index: 3;
+    background: var(--ink); color: var(--paper);
+    font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    padding: 5px 9px;
+  }
+
+  /* FULL BANNER */
+  .full-banner {
+    position: relative; overflow: hidden; min-height: 46vh;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: linear-gradient(140deg, #2B2620 0%, #14110D 65%, #0A0806 100%);
+    color: #fff; padding: 60px 20px; margin-top: 46px;
+  }
+  .full-banner .inner { position: relative; z-index: 2; }
+  .full-banner h2 { font-size: clamp(22px, 4.4vw, 40px); font-weight: 500; letter-spacing: .18em; text-transform: uppercase; margin: 0 0 20px; }
+
+  /* BENEFITS CAROUSEL */
+  .benefits { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; padding: 26px 0; }
+  .benefits-track { display: flex; gap: 56px; width: max-content; animation: marquee 32s linear infinite; }
+  .benefits:hover .benefits-track, .benefits:focus-within .benefits-track { animation-play-state: paused; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .benefit { display: flex; align-items: center; gap: 11px; white-space: nowrap; }
+  .benefit svg { width: 22px; height: 22px; flex: none; color: var(--ink); stroke-width: 1.3; }
+  .benefit .btext strong { display: block; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+  .benefit .btext span { font-size: 11px; color: var(--ink-soft); letter-spacing: .04em; }
+  @media (prefers-reduced-motion: reduce) {
+    .benefits { overflow-x: auto; }
+    .benefits-track { animation: none; }
+  }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 46px 0 calc(30px + env(safe-area-inset-bottom,0px)); }
+  .foot-grid { display: grid; grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  @media (min-width: 760px) { .foot-grid { grid-template-columns: 1.2fr 1fr 1fr; text-align: left; gap: 40px; } }
+  .foot-col h4 { font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; margin: 0 0 14px; color: var(--ink); }
+  .foot-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .foot-col button, .foot-col a {
+    background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+    font-size: 12px; color: var(--ink-soft); letter-spacing: .06em;
+  }
+  .foot-col button:hover, .foot-col a:hover { color: var(--ink); }
+  .foot-brand .flogo { font-size: 17px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; margin-bottom: 12px; }
+  .foot-brand p { font-size: 12px; color: var(--ink-soft); line-height: 1.7; margin: 0 0 16px; max-width: 34ch; }
+  @media (max-width: 759px) { .foot-brand p { margin-left: auto; margin-right: auto; } }
+  .foot-ig { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+  .foot-ig svg { width: 15px; height: 15px; }
+  .foot-bottom {
+    margin-top: 38px; padding-top: 20px; border-top: 1px solid var(--line);
+    text-align: center; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* PDP */
+  .pdp { position: fixed; inset: 0; z-index: 200; background: var(--paper); display: none; overflow-y: auto; padding-top: env(safe-area-inset-top,0px); }
+  .pdp.open { display: block; }
+  .pdp-top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .pdp-top .wrap { height: 58px; display: flex; align-items: center; }
+  .back { display: inline-flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: var(--ink); font-family: inherit; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; padding: 8px 0; }
+  .back svg { width: 15px; height: 15px; }
+  .pdp-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 900px) { .pdp-grid { grid-template-columns: 1.1fr .9fr; } }
+  .pdp-art { aspect-ratio: 4/5; position: relative; overflow: hidden; background: var(--paper-2); }
+  .pdp-side { padding: 38px 20px 70px; max-width: 460px; margin: 0 auto; width: 100%; }
+  @media (min-width: 900px) { .pdp-side { padding: 70px 40px; } }
+  .pdp-cat { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 12px; }
+  .pdp-name { font-size: clamp(19px, 3vw, 26px); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 10px; line-height: 1.3; }
+  .pdp-price { margin: 0 0 26px; }
+  .pdp-price .price-row { justify-content: flex-start; }
+  .pdp-price .price-now { font-size: 20px; }
+  .pdp-price .price-old { font-size: 14px; }
+  .pdp-price .installment { margin-top: 5px; font-size: 12px; }
+  .pdp-label { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .sizes { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+  .sizes span { border: 1px solid var(--line); padding: 10px 18px; font-size: 12px; letter-spacing: .08em; }
+  .pdp-desc { font-size: 13.5px; line-height: 1.7; color: var(--ink-soft); margin: 26px 0 0; border-top: 1px solid var(--line); padding-top: 20px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<div class="announce">Envio para todo o Brasil · Compra pelo Direct</div>
+
+<header>
+  <div class="wrap head-main">
+    <div class="head-left">
+      <button class="dots" id="openMenu" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <a class="logo" href="#top">Saar.og</a>
+    <div class="head-icons">
+      <button class="icon-btn" id="openSearch" aria-label="Pesquisar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      </button>
+      <a class="icon-btn" href="https://ig.me/m/saar.og" target="_blank" rel="noopener" aria-label="Instagram Direct">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="search-panel" id="searchPanel">
+  <div class="wrap search-inner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+    <input type="search" id="searchInput" placeholder="Buscar peça" autocomplete="off">
+    <button class="search-close" id="closeSearch">Fechar</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Menu">
+  <div class="drawer-top">
+    <span class="dlogo">Saar.og</span>
+    <button class="drawer-close" id="closeMenu" aria-label="Fechar menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <nav id="menuNav">
+    <button class="active" data-cat="all">Tudo</button>
+    <button data-cat="bermudas">Bermudas</button>
+    <button data-cat="camisetas">Camisetas</button>
+    <button data-cat="oculos">Óculos</button>
+  </nav>
+  <div class="drawer-foot">
+    <a href="https://ig.me/m/saar.og" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      @saar.og
+    </a>
+  </div>
+</aside>
+
+<section class="hero-banner" id="top">
+  <div class="grain"></div>
+  <div class="inner">
+    <p class="kicker">Drop 03</p>
+    <h1>Saar.og</h1>
+    <a class="btn solid" href="#colecao">Ver coleção</a>
+  </div>
+</section>
+
+<section class="products wrap" id="colecao">
+  <h2 class="sec-title" id="secTitle">Coleção</h2>
+  <div class="grid" id="grid"></div>
+  <p class="no-results" id="noResults">Nenhuma peça encontrada</p>
+</section>
+
+<div class="full-banner">
+  <div class="grain"></div>
+  <div class="inner">
+    <h2>Peças limitadas</h2>
+    <a class="btn solid" href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Falar no Direct</a>
+  </div>
+</div>
+
+<div class="benefits" id="benefits">
+  <div class="benefits-track" id="benefitsTrack"></div>
+</div>
+
+<footer id="contato">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="flogo">Saar.og</div>
+        <p>Peças limitadas, atendimento direto com a gente pelo Instagram.</p>
+        <a class="foot-ig" href="https://ig.me/m/saar.og" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          @saar.og
+        </a>
+      </div>
+      <div class="foot-col">
+        <h4>Coleção</h4>
+        <ul>
+          <li><button data-foot-cat="all">Tudo</button></li>
+          <li><button data-foot-cat="bermudas">Bermudas</button></li>
+          <li><button data-foot-cat="camisetas">Camisetas</button></li>
+          <li><button data-foot-cat="oculos">Óculos</button></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Atendimento</h4>
+        <ul>
+          <li><a href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Fale conosco</a></li>
+          <li><a href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Trocas e devoluções</a></li>
+          <li><a href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Prazo de entrega</a></li>
+          <li><a href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Formas de pagamento</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">© 2026 Saar.og — Todos os direitos reservados</div>
+  </div>
+</footer>
+
+<div class="pdp" id="pdp" role="dialog" aria-modal="true" aria-label="Produto">
+  <div class="pdp-top">
+    <div class="wrap">
+      <button class="back" id="pdpBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 18l-6-6 6-6"/></svg>
+        Voltar
+      </button>
+    </div>
+  </div>
+  <div class="pdp-grid">
+    <div class="pdp-art" id="pdpArt"></div>
+    <div class="pdp-side">
+      <p class="pdp-cat" id="pdpCat"></p>
+      <h1 class="pdp-name" id="pdpName"></h1>
+      <div class="pdp-price" id="pdpPrice"></div>
+      <p class="pdp-label">Tamanho</p>
+      <div class="sizes" id="pdpSizes"></div>
+      <a class="btn ink block" href="https://ig.me/m/saar.og" target="_blank" rel="noopener">Comprar pelo Direct</a>
+      <p class="pdp-desc" id="pdpDesc"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ==================================================================
+  // FOTOS: cole o link da imagem em img: "" de cada produto.
+  // PREÇOS: price = preço atual, oldPrice = preço "de" riscado.
+  // Deixe oldPrice: 0 para a peça não aparecer como promoção.
+  // O parcelado em 3x é calculado sozinho a partir do price.
+  // ==================================================================
+  var INSTALLMENTS = 3; // troque aqui se parcelar em mais/menos vezes
+
+  var products = [
+    { id: "bermuda-cargo", name: "Bermuda Cargo", price: 189.90, oldPrice: 259.90, cat: "bermudas", img: "", tone: "#2E3A2A",
+      desc: "Corte cargo com bolsos utilitários e cintura ajustável. Peça numerada, sem reposição.", sizes: ["P","M","G","GG"] },
+    { id: "bermuda-moletom", name: "Bermuda Moletom", price: 159.90, oldPrice: 219.90, cat: "bermudas", img: "", tone: "#3A342C",
+      desc: "Moletom encorpado com elástico duplo e bordado no bolso lateral. Caimento reto.", sizes: ["P","M","G","GG"] },
+    { id: "bermuda-jeans", name: "Bermuda Jeans", price: 199.90, oldPrice: 279.90, cat: "bermudas", img: "", tone: "#2A3440",
+      desc: "Jeans rígido de lavagem clara, modelagem wide abaixo do joelho.", sizes: ["P","M","G","GG"] },
+    { id: "bermuda-listrada", name: "Bermuda Listrada", price: 179.90, oldPrice: 0, cat: "bermudas", img: "", tone: "#33302A",
+      desc: "Tecido leve com listras tonais, cós com cordão. Ideal para o verão.", sizes: ["P","M","G","GG"] },
+    { id: "camiseta-logo", name: "Camiseta Logo", price: 99.90, oldPrice: 149.90, cat: "camisetas", img: "", tone: "#332A25",
+      desc: "Algodão penteado com logo serigrafado no peito. Corte reto, gramatura alta.", sizes: ["P","M","G","GG"] },
+    { id: "camiseta-oversized", name: "Camiseta Oversized", price: 109.90, oldPrice: 159.90, cat: "camisetas", img: "", tone: "#1A1A1A",
+      desc: "Oversized em preto, ombro caído e barra dupla costurada.", sizes: ["P","M","G","GG"] },
+    { id: "camiseta-grafica", name: "Camiseta Gráfica", price: 119.90, oldPrice: 0, cat: "camisetas", img: "", tone: "#3A3228",
+      desc: "Estampa gráfica exclusiva do drop, aplicada em serigrafia.", sizes: ["P","M","G","GG"] },
+    { id: "camiseta-polo", name: "Camiseta Polo", price: 139.90, oldPrice: 189.90, cat: "camisetas", img: "", tone: "#2C3330",
+      desc: "Polo em piquê com gola canelada e abotoamento discreto.", sizes: ["P","M","G","GG"] },
+    { id: "oculos-square", name: "Óculos Square", price: 89.90, oldPrice: 139.90, cat: "oculos", img: "", tone: "#242B33",
+      desc: "Armação quadrada acetinada com lente degradê e haste metálica.", sizes: ["Único"] },
+    { id: "oculos-slim", name: "Óculos Slim", price: 79.90, oldPrice: 129.90, cat: "oculos", img: "", tone: "#20262A",
+      desc: "Armação slim retangular, ponte fina e lente escura clássica.", sizes: ["Único"] },
+    { id: "oculos-round", name: "Óculos Round", price: 94.90, oldPrice: 0, cat: "oculos", img: "", tone: "#2A2620",
+      desc: "Armação redonda em acetato, lente marrom degradê.", sizes: ["Único"] },
+    { id: "oculos-noir", name: "Óculos Noir", price: 109.90, oldPrice: 159.90, cat: "oculos", img: "", tone: "#161616",
+      desc: "Armação preta fosca com lente escura total. Discreto e versátil.", sizes: ["Único"] }
+  ];
+
+  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.', ','); }
+  function priceBlock(p){
+    var html = '<div class="price-row">';
+    if (p.oldPrice > 0) html += '<span class="price-old">' + brl(p.oldPrice) + '</span>';
+    html += '<span class="price-now">' + brl(p.price) + '</span></div>';
+    html += '<div class="installment">' + INSTALLMENTS + 'x de ' + brl(p.price / INSTALLMENTS) + ' sem juros</div>';
+    return html;
+  }
+
+  var byId = {}; products.forEach(function(p){ byId[p.id] = p; });
+  var labels = { bermudas: "Bermudas", camisetas: "Camisetas", oculos: "Óculos", all: "Coleção" };
+
+  function media(p){
+    if (p.img) return '<img class="photo" src="' + p.img + '" alt="' + p.name + '" loading="lazy">';
+    return '<div class="photo" style="background:' + p.tone + '"></div><div class="grain"></div><span class="ph-mark">Saar.og</span>';
+  }
+
+  var grid = document.getElementById('grid');
+  products.forEach(function(p){
+    var card = document.createElement('div');
+    card.className = 'card'; card.dataset.cat = p.cat; card.dataset.name = p.name.toLowerCase();
+    card.innerHTML =
+      '<button class="art" data-open="' + p.id + '">' +
+        (p.oldPrice > 0 ? '<span class="badge">Promoção</span>' : '') +
+        media(p) +
+      '</button>' +
+      '<div class="info">' +
+        '<div class="name" data-open="' + p.id + '">' + p.name + '</div>' +
+        priceBlock(p) +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  // BENEFÍCIOS — edite os textos aqui
+  var benefits = [
+    { icon: '<circle cx="12" cy="12" r="9"/><path d="M9 12.5l2 2 4-4.5"/>', title: "Compra segura", sub: "Atendimento direto com a loja" },
+    { icon: '<rect x="3" y="7" width="13" height="10" rx="1"/><path d="M16 10h3l2 3v4h-5"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/>', title: "Envio rápido", sub: "Despacho em até 2 dias úteis" },
+    { icon: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>', title: "Até 3x sem juros", sub: "No cartão de crédito" },
+    { icon: '<path d="M12 3l2.3 6.3L21 11l-6.7 1.7L12 19l-2.3-6.3L3 11l6.7-1.7z"/>', title: "Peças limitadas", sub: "Drops sem reposição" },
+    { icon: '<path d="M4 7h16M4 12h16M4 17h10"/>', title: "Todo o Brasil", sub: "Enviamos para qualquer estado" }
+  ];
+  var track = document.getElementById('benefitsTrack');
+  var bHtml = benefits.map(function(b){
+    return '<div class="benefit">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' + b.icon + '</svg>' +
+      '<span class="btext"><strong>' + b.title + '</strong><span>' + b.sub + '</span></span>' +
+    '</div>';
+  }).join('');
+  track.innerHTML = bHtml + bHtml; // duplicado para o loop contínuo
+
+  var navBtns = document.querySelectorAll('#menuNav button');
+  var secTitle = document.getElementById('secTitle');
+  var drawer = document.getElementById('drawer');
+  var scrim = document.getElementById('scrim');
+
+  function openMenu(){ drawer.classList.add('open'); scrim.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeMenu(){ drawer.classList.remove('open'); scrim.classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('openMenu').addEventListener('click', openMenu);
+  document.getElementById('closeMenu').addEventListener('click', closeMenu);
+  scrim.addEventListener('click', closeMenu);
+
+  function activateCat(cat, scroll){
+    navBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.cat === cat); });
+    document.querySelectorAll('.card').forEach(function(c){
+      c.classList.toggle('hide', cat !== 'all' && c.dataset.cat !== cat);
+    });
+    secTitle.textContent = labels[cat] || 'Coleção';
+    if (scroll) document.getElementById('colecao').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  navBtns.forEach(function(b){
+    b.addEventListener('click', function(){ closeMenu(); activateCat(b.dataset.cat, true); });
+  });
+  document.querySelectorAll('[data-foot-cat]').forEach(function(b){
+    b.addEventListener('click', function(){ activateCat(b.dataset.footCat, true); });
+  });
+
+  // BUSCA
+  var searchPanel = document.getElementById('searchPanel');
+  var searchInput = document.getElementById('searchInput');
+  var noResults = document.getElementById('noResults');
+  document.getElementById('openSearch').addEventListener('click', function(){
+    searchPanel.classList.add('open'); searchInput.focus();
+  });
+  function closeSearch(){
+    searchPanel.classList.remove('open');
+    searchInput.value = '';
+    runSearch('');
+  }
+  document.getElementById('closeSearch').addEventListener('click', closeSearch);
+
+  function runSearch(term){
+    term = term.trim().toLowerCase();
+    if (!term) {
+      activateCat('all', false);
+      noResults.classList.remove('show');
+      return;
+    }
+    navBtns.forEach(function(b){ b.classList.remove('active'); });
+    var found = 0;
+    document.querySelectorAll('.card').forEach(function(c){
+      var hit = c.dataset.name.indexOf(term) !== -1 || (labels[c.dataset.cat] || '').toLowerCase().indexOf(term) !== -1;
+      c.classList.toggle('hide', !hit);
+      if (hit) found++;
+    });
+    secTitle.textContent = 'Resultados';
+    noResults.classList.toggle('show', found === 0);
+  }
+  searchInput.addEventListener('input', function(){ runSearch(searchInput.value); });
+  searchInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('colecao').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+
+  var pdp = document.getElementById('pdp');
+  function openPdp(id, push){
+    var p = byId[id]; if (!p) return;
+    document.getElementById('pdpArt').innerHTML = media(p);
+    document.getElementById('pdpCat').textContent = labels[p.cat];
+    document.getElementById('pdpName').textContent = p.name;
+    document.getElementById('pdpPrice').innerHTML = priceBlock(p);
+    document.getElementById('pdpDesc').textContent = p.desc;
+    document.getElementById('pdpSizes').innerHTML = p.sizes.map(function(s){ return '<span>' + s + '</span>'; }).join('');
+    pdp.classList.add('open'); document.body.style.overflow = 'hidden';
+    if (push !== false) history.replaceState(null, '', '#produto-' + id);
+    pdp.scrollTop = 0;
+  }
+  function closePdp(){
+    pdp.classList.remove('open'); document.body.style.overflow = '';
+    history.replaceState(null, '', '#colecao');
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-open]');
+    if (t) { e.preventDefault(); openPdp(t.dataset.open); }
+  });
+  document.getElementById('pdpBack').addEventListener('click', closePdp);
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (pdp.classList.contains('open')) closePdp();
+    else if (drawer.classList.contains('open')) closeMenu();
+    else if (searchPanel.classList.contains('open')) closeSearch();
+  });
+
+  var h = window.location.hash.replace('#produto-', '');
+  if (h && byId[h]) openPdp(h, false);
+})();
+</script>
+
+</body>
+</html>
